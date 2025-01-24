@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Feed</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        #video {
+            border: 2px solid black;
+            width: 640px;
+            height: 480px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <video id="video" autoplay></video>
+        <button id="captureButton">Capture Image</button>
+    </div>
+
+    <script>
+        // Get the video element
+        const videoElement = document.getElementById('video');
+
+        // Check if the browser supports mediaDevices
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Request the camera stream
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    // Assign the stream to the video element's srcObject
+                    videoElement.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.log('Error accessing the camera: ', error);
+                    alert('Error accessing the camera.');
+                });
+        } else {
+            console.log('Camera not supported in this browser.');
+            alert('Your browser does not support camera access.');
+        }
+
+        // Capture image from the video feed
+        document.getElementById('captureButton').addEventListener('click', function() {
+            // Create a canvas to draw the image
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            // Draw the current frame from the video to the canvas
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Convert the canvas to a data URL and display it in an alert (or save it)
+            const dataUrl = canvas.toDataURL('image/png');
+            alert('Captured Image URL: ' + dataUrl);
+        });
+    </script>
+</body>
+</html>
